@@ -1,8 +1,8 @@
 from pypdf import PdfReader
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.colors import black
 from reportlab.pdfgen import canvas
 import io
+
 
 def read():
     reader = PdfReader("source.pdf")
@@ -12,6 +12,7 @@ def read():
         text += reader.pages[page_num].extract_text()
 
     return replace_ligatures(text)
+
 
 def write(text):
     words = text.split()
@@ -38,10 +39,17 @@ def write(text):
         c.drawString(x_pos, y_pos, second_half)
         x_pos += c.stringWidth(second_half, font, font_size) + 5
 
+        # check width
         if x_pos > 500:
             x_pos = 100
             y_pos -= font_size + 5
 
+        # check height
+        if y_pos < 72:
+            c.showPage()
+            y_pos = 750
+
+    c.showPage()
     c.save()
 
     packet.seek(0)
